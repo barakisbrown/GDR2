@@ -1,16 +1,16 @@
-﻿using App;
-using CommandLine;
-using Core.Dice;
+﻿using Core.Dice;
 using Core.Dice.Bad;
 using Core.Dice.Good;
-
 
 if (args.Length > 0)
 {
     var cmd = new CommandLine.CommandLine(args);
 }
 else
-    APP();
+{
+    var app = new Interactive.Interactive();
+}
+
 
 
 
