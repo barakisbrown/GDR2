@@ -2,6 +2,6 @@
 {
     public enum Colors
     {
-        BLUE,BLACK,GREEN,PURPLE,YELLOW,RED
+        BLUE,BLACK,GREEN,PURPLE,YELLOW,RED,NONE
     };
 }
