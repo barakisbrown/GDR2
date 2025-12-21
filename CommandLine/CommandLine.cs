@@ -1,12 +1,10 @@
-﻿using Core.Dice;
+﻿namespace CommandLine;
+
+using Core.Dice;
 using Core.Dice.Bad;
 using Core.Dice.Good;
 using Spectre.Console;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
-
-namespace CommandLine;
 
 /// <summary>
 /// CommandLine will just launch a non-interactive version of the application to be run purely from the console.
@@ -17,8 +15,8 @@ namespace CommandLine;
 public class CommandLine
 {
     private static readonly char[] _Valid = "BKGPYR".ToLower().ToCharArray();
-    private List<KeyValuePair<Colors, int>> _Bag = new List<KeyValuePair<Colors, int>>();
-    private Pool _DicePool = new Pool();
+    private List<KeyValuePair<Colors, int>> _Bag = [];
+    private Pool _DicePool = new();
 
     public CommandLine(string[] args)
     {        
@@ -49,8 +47,6 @@ public class CommandLine
     internal static void DisplayColors()
     {
         AnsiConsole.WriteLine();
-        AnsiConsole.MarkupLine("[underline bold red]GDR2 -- Genesys Dice Roller version 2.0 -- Copyright @2025[/]");
-        AnsiConsole.MarkupLine("[bold]Usage gdr2 --colors to show this help screen[/]");
         AnsiConsole.MarkupLine("[bold]Following Colors represent dice available to be used.[/]");
         AnsiConsole.MarkupLine("[blue]B for Boost(BLUE)[/]");
         AnsiConsole.MarkupLine("[green]g for Ability(GREEN)[/]");
@@ -63,57 +59,67 @@ public class CommandLine
     /// <summary>
     // VALID DICE STRING VALIDATED AND THEN ROLLED
     // All characters will be converted to lowercase
-    // L = 0 then assume 1
+    // # = 0 then assume 1
     // Valid Example => 3G2P
     // valid Example => bgppr
+    // valid Example => 1 of [bkgpyr]
     /// </summary>
     /// <param name="pool">user specified string that is being rolled</param>
     private bool ValidateString(string pool)
     {
+        AnsiConsole.MarkupLine("[underline bold red]GDR2 -- Genesys Dice Roller version 2.0 -- Copyright @2025[/]");
         AnsiConsole.WriteLine($"String being validated is [{pool}]");
-        if (pool.Length == 1 && pool.IndexOfAny(_Valid) >= 0)
-            _Bag.Add(new KeyValuePair<Colors, int>(toColor(pool[0]), 1));
-        else
-            throw new InvalidDiceException();
-        
-        // THERE IS NO NUMBERS IN THE STRING AND COLOR ARE VALID
-        if (pool.All(char.IsLetter) && pool.IndexOfAny(_Valid) >= 0) 
+        if (pool.Length == 1)
         {
-            pool.ToLower();
-            foreach (char x in pool)
-            {
-                _Bag.Add(new KeyValuePair<Colors, int>(toColor(x), 1));
-            }
+            if (ValidateSingle(pool))
+                _Bag.Add(new KeyValuePair<Colors, int>(toColor(pool[0]), 1));
+            else
+                throw new InvalidDiceException();
+        }
+        // THERE IS NO NUMBERS IN THE STRING AND COLOR ARE VALID
+        if (pool.All(char.IsLetter))
+        {
+            if (pool.IndexOfAny(_Valid) == -1)
+                throw new InvalidDiceException();
+            else
+                ValidateAllLetters(pool);
         }
         else
-            throw new InvalidDiceException();
-        // THERE ARE NUMBERS IN THE STRING
-        var pattern = @"\d.";
-        var placement = string.Empty;
-        string result = Regex.Replace(pool, pattern, placement);
-        var match = Regex.Matches(pool, pattern, RegexOptions.IgnoreCase);
-        var list = match.Cast<Match>().Select(match => match.Value).ToList();
-        foreach (var entry in list)
         {
-            // ENTRY IS {0-9}{bkgpyr}
-            var amount = entry[0] - '0';
-            var type = Char.ToLower(entry[1]);
-            if (toColor(type) != Colors.NONE)
+            // THERE ARE NUMBERS IN THE STRING
+            var pattern = @"\d.";
+            var placement = string.Empty;
+            string result = Regex.Replace(pool, pattern, placement);
+            if (!result.Contains(pool))
             {
-                _Bag.Add(new KeyValuePair<Colors, int>(toColor(type), amount));
+                var match = Regex.Matches(pool, pattern, RegexOptions.IgnoreCase);
+                var list = match.Cast<Match>().Select(match => match.Value).ToList();
+                foreach (var entry in list)
+                {
+                    // ENTRY IS {0-9}{bkgpyr}
+                    var amount = entry[0] - '0';
+                    var type = Char.ToLower(entry[1]);
+                    if (toColor(type) != Colors.NONE)
+                    {
+                        _Bag.Add(new KeyValuePair<Colors, int>(toColor(type), amount));
+                    }
+                    else
+                    {
+                        AnsiConsole.MarkupLineInterpolated($"Error : [RED]type[/] IS INVALID.");
+                        AnsiConsole.WriteLine("Only letters allowed are [b]lue [k]black [g]reen [p]urple [y]ellow [r]ed");
+                        return false;
+                    }
+                }
+                // IF RESULT IS EMPTY THEN NOTHING ELSE IS DONE
+                if (result != string.Empty)
+                    ValidateString(result);
+                else
+                    return true;
             }
             else
-            {
-                AnsiConsole.MarkupLineInterpolated($"Error : [RED]type[/] IS INVALID.");
-                AnsiConsole.WriteLine("Only letters allowed are [b]lue [k]black [g]reen [p]urple [y]ellow [r]ed");
-                return false;
-            }
+                throw new InvalidDiceException();
         }
-        // IF RESULT IS EMPTY THEN NOTHING ELSE IS DONE
-        if (result != string.Empty)
-            ValidateString(result);
-        else
-            return true;
+        
         // All Dice Validated
         return true;            
     }
@@ -130,7 +136,7 @@ public class CommandLine
             _DicePool.Add(ConvertColorToDice(color), amount);
         }
         // Roll Them
-         _DicePool.Roll();
+        _DicePool.Roll();
         // Show Results
         AnsiConsole.WriteLine("Printing Results");
         AnsiConsole.WriteLine($"Dice Rolled => {_DicePool.PRINTEDSTR}");
@@ -190,4 +196,21 @@ public class CommandLine
         return dice;
     }
 
+    private bool ValidateSingle(string pool)
+    {
+        if (pool.Length == 1 && pool.IndexOfAny(_Valid) >= 0)
+            return true;
+        else
+            return false;
+
+    }
+
+    private void ValidateAllLetters(string pool)
+    {
+        pool.ToLower();
+        foreach (char x in pool)
+        {
+            _Bag.Add(new KeyValuePair<Colors, int>(toColor(x), 1));
+        }
+    }    
 }

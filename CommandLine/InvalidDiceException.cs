@@ -8,6 +8,7 @@ namespace CommandLine
         {
             AnsiConsole.MarkupLine("[RED]ERROR[/] has occured. Wrong Color and Illegal Charater was entered.");
             AnsiConsole.WriteLine("Please check that you entered is legal.");
+            CommandLine.DisplayColors();
         }
 
         public InvalidDiceException(string message) : base(message)
