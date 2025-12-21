@@ -10,4 +10,8 @@
       <PackageReference Include="Spectre.Console" Version="0.54.1-alpha.0.10" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Core\Core.csproj" />
+    </ItemGroup>
+
 </Project>
