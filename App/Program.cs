@@ -1,6 +1,7 @@
 ﻿using Core.Dice;
 using Core.Dice.Bad;
 using Core.Dice.Good;
+using Interactive;
 
 if (args.Length > 0)
 {
@@ -8,7 +9,7 @@ if (args.Length > 0)
 }
 else
 {
-    var app = new Interactive.Interactive();
+    var app = new App();
 }
 
 

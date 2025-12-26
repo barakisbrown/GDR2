@@ -2,4 +2,5 @@
   <Project Path="App/App.csproj" />
   <Project Path="CommandLine/CommandLine.csproj" />
   <Project Path="Core/Core.csproj" />
+  <Project Path="Interactive/Interactive.csproj" Id="a36e64e1-b0fa-4be4-a4a2-8fe447bf70b8" />
 </Solution>
