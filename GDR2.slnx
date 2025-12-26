@@ -2,5 +2,4 @@
   <Project Path="App/App.csproj" />
   <Project Path="CommandLine/CommandLine.csproj" />
   <Project Path="Core/Core.csproj" />
-  <Project Path="Interactive/Interactive.csproj" />
 </Solution>
