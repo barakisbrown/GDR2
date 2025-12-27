@@ -133,7 +133,7 @@ public class CommandLine
             var ValuePair = _Bag[loop];
             var color = ValuePair.Key;
             int amount = ValuePair.Value;
-            _DicePool.Add(ConvertColorToDice(color), amount);
+            _DicePool.Add(ColorToDice(color), amount);
         }
         // Roll Them
         _DicePool.Roll();
@@ -180,7 +180,7 @@ public class CommandLine
         return retColor;
     }
 
-    private Dice ConvertColorToDice(Colors color)
+    private Dice ColorToDice(Colors color)
     {
         Dice? dice = null;
         switch(color)
