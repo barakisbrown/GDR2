@@ -101,8 +101,8 @@ namespace Interactive
             // ADDING LOGIC just in case Despair or Triump has been rolled
             if (_dice.DESPAIR > 0 || _dice.TRIUMPS > 0)
             {
-                var despair = (_dice.DESPAIR > 0) ? $"You have {_dice.DESPAIR} AGAINST YOU" : string.Empty;
-                var triump = (_dice.TRIUMPS > 0) ? $"You have {_dice.TRIUMPS} FOR YOU" : string.Empty;
+                var despair = (_dice.DESPAIR > 0) ? $"You have {_dice.DESPAIR} DESPAIRS AGAINST AGAINST YOU. EWW SORRY." : string.Empty;
+                var triump = (_dice.TRIUMPS > 0) ? $"You have {_dice.TRIUMPS} TRIUMPS FOR YOU .. GOOD JOB" : string.Empty;
                 if (despair != string.Empty)
                 {
                     AnsiConsole.MarkupLineInterpolated($"[RED]{despair}[/]");
